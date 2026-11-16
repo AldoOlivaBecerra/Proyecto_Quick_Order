@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}QUICK ORDER - Catálogo de productos{% endblock %}
+
+{% block content %}
+<section class="catalog-section" aria-labelledby="catalog-heading">
+    <!-- Encabezado de la Sección -->
+    <div class="catalog-header">
+        <div>
+            <h2 id="catalog-heading" class="catalog-title">Catálogo de productos</h2>
+            <p class="catalog-subtitle">Listado de productos activos registrados en la base de datos disponibles para el menú.</p>
+        </div>
+        <div class="catalog-meta">
+            {% if productos %}
+                <span class="count-badge" aria-label="Cantidad de productos activos">
+                    <strong>{{ productos|length }}</strong> {{ 'producto activo' if productos|length == 1 else 'productos activos' }}
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Manejo de Errores Controlados de Base de Datos -->
+    {% if error_mensaje %}
+        <div class="alert-box alert-error" role="alert">
+            <div class="alert-icon" aria-hidden="true">⚠️</div>
+            <div class="alert-content">
+                <h3 class="alert-title">Error de Conexión o Consulta</h3>
+                <p class="alert-text">{{ error_mensaje }}</p>
+                <small class="alert-hint">Por favor verifique que la base de datos SQLite esté accesible y vuelva a recargar la página.</small>
+            </div>
+        </div>
+    {% else %}
+
+        <!-- Grilla de Productos Activos -->
+        {% if productos and productos|length > 0 %}
+            <div class="products-grid" role="list" aria-label="Productos activos disponibles">
+                {% for producto in productos %}
+                    <article class="product-card" role="listitem">
+                        <div class="product-card-top">
+                            <span class="product-id-tag">#{{ producto.producto_id }}</span>
+                            <span class="product-status-tag" title="Producto disponible para la venta">Activo</span>
+                        </div>
+                        <div class="product-card-body">
+                            <h3 class="product-name">{{ producto.nombre }}</h3>
+                            
+                            {% if producto.descripcion and producto.descripcion.strip() %}
+                                <p class="product-description">{{ producto.descripcion }}</p>
+                            {% else %}
+                                <p class="product-description empty-desc"><em>Sin descripción disponible para este producto.</em></p>
+                            {% endif %}
+                        </div>
+                        <div class="product-card-footer">
+                            <span class="product-availability">
+                                <span class="indicator-dot" aria-hidden="true"></span> En catálogo
+                            </span>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+
+        <!-- Estado Vacío: Cuando no existen productos activos -->
+        {% else %}
+            <div class="empty-state-card" role="status">
+                <div class="empty-state-icon" aria-hidden="true">🍽️</div>
+                <h3 class="empty-state-title">No hay productos disponibles</h3>
+                <p class="empty-state-text">Actualmente no existen productos registrados con estado activo en el sistema.</p>
+                <p class="empty-state-subtext">Los productos aparecerán aquí automáticamente una vez que se activen en la base de datos.</p>
+            </div>
+        {% endif %}
+
+    {% endif %}
+</section>
+{% endblock %}

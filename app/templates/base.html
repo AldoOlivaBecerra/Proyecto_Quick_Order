@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}QUICK ORDER - Catálogo de Productos{% endblock %}</title>
+    <!-- Estilos CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Google Fonts para tipografía profesional y limpia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Encabezado Principal -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="brand-group">
+                <div class="brand-logo" aria-hidden="true">⚡</div>
+                <div>
+                    <h1 class="brand-title">QUICK ORDER</h1>
+                    <p class="brand-tagline">Sistema de Gestión de Comandas para Restaurantes de Comida Rápida</p>
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="status-pill">Fase 1: Consulta de Productos</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Barra de Navegación / Contexto de Módulos -->
+    <nav class="app-nav" aria-label="Navegación de módulos">
+        <div class="nav-container">
+            <ul class="nav-list">
+                <li class="nav-item active">
+                    <span class="nav-link active">📦 Productos (Activo)</span>
+                </li>
+                <li class="nav-item disabled">
+                    <span class="nav-link disabled" title="Próximos incrementos">📋 Comandas (Próximamente)</span>
+                </li>
+                <li class="nav-item disabled">
+                    <span class="nav-link disabled" title="Próximos incrementos">👨‍🍳 Cocina (Próximamente)</span>
+                </li>
+                <li class="nav-item disabled">
+                    <span class="nav-link disabled" title="Próximos incrementos">📊 Reportes (Próximamente)</span>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="main-content">
+        <div class="content-container">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <!-- Pie de Página -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <p><strong>QUICK ORDER</strong> &copy; 2026 &bull; Módulo de Productos &bull; Conectado a SQLite local</p>
+            <p class="footer-note">Modo solo lectura: la administración y creación de pedidos se habilitará en los siguientes incrementos.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
