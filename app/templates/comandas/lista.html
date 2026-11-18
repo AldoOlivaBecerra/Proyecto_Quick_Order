@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}QUICK ORDER - Gestión de Comandas{% endblock %}
+
+{% block content %}
+<section class="comandas-section" aria-labelledby="comandas-heading">
+    <!-- Encabezado de la Sección -->
+    <div class="catalog-header">
+        <div>
+            <h2 id="comandas-heading" class="catalog-title">Gestión de Comandas</h2>
+            <p class="catalog-subtitle">Monitoreo de pedidos en mostrador, consulta de estados y acciones de gestión.</p>
+        </div>
+        <div class="catalog-actions">
+            <a href="{{ url_for('comandas.nueva_comanda') }}" class="btn btn-primary">
+                ➕ Registrar Nueva Comanda
+            </a>
+        </div>
+    </div>
+
+    <!-- Error de Carga -->
+    {% if error_mensaje %}
+        <div class="alert-box alert-error" role="alert">
+            <div class="alert-icon" aria-hidden="true">⚠️</div>
+            <div class="alert-content">
+                <h3 class="alert-title">Error al consultar comandas</h3>
+                <p class="alert-text">{{ error_mensaje }}</p>
+            </div>
+        </div>
+    {% else %}
+
+        {% if comandas and comandas|length > 0 %}
+            <div class="comandas-table-wrapper">
+                <table class="comandas-table" role="table" aria-label="Listado de comandas">
+                    <thead>
+                        <tr>
+                            <th scope="col">ID</th>
+                            <th scope="col">Fecha y Hora</th>
+                            <th scope="col">Estado</th>
+                            <th scope="col">Resumen</th>
+                            <th scope="col" class="text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for comanda in comandas %}
+                            <tr class="comanda-row estado-{{ comanda.estado|replace(' ', '-') }}">
+                                <td class="comanda-id-cell">
+                                    <span class="comanda-badge-id">#{{ comanda.comanda_id }}</span>
+                                </td>
+                                <td class="comanda-date-cell">
+                                    <time datetime="{{ comanda.fecha_hora_creacion }}">{{ comanda.fecha_hora_creacion }}</time>
+                                </td>
+                                <td class="comanda-status-cell">
+                                    <span class="badge badge-estado badge-{{ comanda.estado|replace(' ', '-') }}">
+                                        {{ comanda.estado|capitalize }}
+                                    </span>
+                                </td>
+                                <td class="comanda-summary-cell">
+                                    <strong>{{ comanda.total_unidades }}</strong> 
+                                    {{ 'unidad' if comanda.total_unidades == 1 else 'unidades' }} 
+                                    ({{ comanda.total_items }} {{ 'ítem' if comanda.total_items == 1 else 'ítems' }})
+                                </td>
+                                <td class="comanda-actions-cell text-right">
+                                    <div class="btn-group-actions">
+                                        <a href="{{ url_for('comandas.ver_comanda', comanda_id=comanda.comanda_id) }}" 
+                                           class="btn btn-sm btn-outline" 
+                                           title="Ver detalle completo">
+                                            🔍 Detalle
+                                        </a>
+
+                                        {% if comanda.estado == 'pendiente' %}
+                                            <a href="{{ url_for('comandas.editar_comanda', comanda_id=comanda.comanda_id) }}" 
+                                               class="btn btn-sm btn-warning" 
+                                               title="Modificar productos y cantidades">
+                                                ✏️ Modificar
+                                            </a>
+                                            <form method="POST" 
+                                                  action="{{ url_for('comandas.cancelar_comanda_accion', comanda_id=comanda.comanda_id) }}" 
+                                                  class="inline-form" 
+                                                  onsubmit="return confirm('¿Está seguro de que desea cancelar la comanda #{{ comanda.comanda_id }}?');">
+                                                <button type="submit" class="btn btn-sm btn-danger" title="Cancelar comanda pendiente">
+                                                    ❌ Cancelar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted text-small" title="Solo las comandas pendientes permiten modificación o cancelación">
+                                                Sin acciones
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        {% else %}
+            <!-- Estado Vacío -->
+            <div class="empty-state-card" role="status">
+                <div class="empty-state-icon" aria-hidden="true">📋</div>
+                <h3 class="empty-state-title">No hay comandas registradas</h3>
+                <p class="empty-state-text">Aún no se ha registrado ninguna comanda en el sistema.</p>
+                <div style="margin-top: 1.25rem;">
+                    <a href="{{ url_for('comandas.nueva_comanda') }}" class="btn btn-primary">
+                        ➕ Registrar la primera comanda
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+
+    {% endif %}
+</section>
+{% endblock %}

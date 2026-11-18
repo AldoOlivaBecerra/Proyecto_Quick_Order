@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}QUICK ORDER - Modificar Comanda #{{ comanda.comanda_id }}{% endblock %}
+
+{% block content %}
+<section class="comanda-form-section" aria-labelledby="editar-heading">
+    <div class="catalog-header">
+        <div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <h2 id="editar-heading" class="catalog-title">Modificar Comanda #{{ comanda.comanda_id }}</h2>
+                <span class="badge badge-estado badge-pendiente">Pendiente</span>
+            </div>
+            <p class="catalog-subtitle">Actualice los productos, cantidades o especificaciones de este pedido pendiente.</p>
+        </div>
+        <div class="catalog-actions">
+            <a href="{{ url_for('comandas.ver_comanda', comanda_id=comanda.comanda_id) }}" class="btn btn-outline">
+                ⬅️ Cancelar y Volver
+            </a>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('comandas.editar_comanda', comanda_id=comanda.comanda_id) }}" class="comanda-form" id="comanda-form">
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3 class="form-section-title">Edición de Productos</h3>
+                <p class="form-section-desc">Modifique las filas deseadas. Recuerde que la comanda debe conservar al menos un producto.</p>
+            </div>
+
+            <div class="items-table-wrapper">
+                <table class="comanda-items-table" id="items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Producto</th>
+                            <th style="width: 15%;">Cantidad</th>
+                            <th style="width: 35%;">Especificaciones (Opcional)</th>
+                            <th style="width: 10%;" class="text-right">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="items-tbody">
+                        {% for item in comanda.detalles %}
+                            <tr class="item-row">
+                                <td>
+                                    <select name="producto_id[]" class="form-control select-producto" required>
+                                        <option value="" disabled>-- Seleccionar producto --</option>
+                                        {% for prod in productos_activos %}
+                                            <option value="{{ prod.producto_id }}" {% if prod.producto_id == item.producto_id %}selected{% endif %}>
+                                                {{ prod.nombre }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" 
+                                           name="cantidad[]" 
+                                           class="form-control input-cantidad" 
+                                           min="1" 
+                                           value="{{ item.cantidad }}" 
+                                           required>
+                                </td>
+                                <td>
+                                    <input type="text" 
+                                           name="especificaciones[]" 
+                                           class="form-control input-especificaciones" 
+                                           value="{{ item.especificaciones }}" 
+                                           placeholder="Ej. Sin cebolla, extra salsa..." 
+                                           maxlength="250">
+                                </td>
+                                <td class="text-right">
+                                    <button type="button" class="btn btn-sm btn-danger btn-remove-row" title="Quitar este producto">
+                                        🗑️
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="form-row-actions">
+                <button type="button" class="btn btn-secondary" id="btn-add-row">
+                    ➕ Agregar otro producto
+                </button>
+            </div>
+        </div>
+
+        <!-- Botones de Acción Final -->
+        <div class="form-submit-bar">
+            <a href="{{ url_for('comandas.ver_comanda', comanda_id=comanda.comanda_id) }}" class="btn btn-outline">
+                Descartar cambios
+            </a>
+            <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-comanda">
+                💾 Guardar Modificaciones
+            </button>
+        </div>
+    </form>
+
+    <!-- Template oculto para clonar nuevas filas dinámicamente -->
+    <template id="row-template">
+        <tr class="item-row">
+            <td>
+                <select name="producto_id[]" class="form-control select-producto" required>
+                    <option value="" disabled selected>-- Seleccionar producto --</option>
+                    {% for prod in productos_activos %}
+                        <option value="{{ prod.producto_id }}">
+                            {{ prod.nombre }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </td>
+            <td>
+                <input type="number" 
+                       name="cantidad[]" 
+                       class="form-control input-cantidad" 
+                       min="1" 
+                       value="1" 
+                       required 
+                       placeholder="1">
+            </td>
+            <td>
+                <input type="text" 
+                       name="especificaciones[]" 
+                       class="form-control input-especificaciones" 
+                       placeholder="Ej. Sin cebolla, extra salsa..." 
+                       maxlength="250">
+            </td>
+            <td class="text-right">
+                <button type="button" class="btn btn-sm btn-danger btn-remove-row" title="Quitar este producto">
+                    🗑️
+                </button>
+            </td>
+        </tr>
+    </template>
+</section>
+{% endblock %}

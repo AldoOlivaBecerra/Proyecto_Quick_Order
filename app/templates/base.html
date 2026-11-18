@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}QUICK ORDER - Catálogo de Productos{% endblock %}</title>
+    <title>{% block title %}QUICK ORDER - Sistema de Comandas{% endblock %}</title>
     <!-- Estilos CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <!-- Google Fonts para tipografía profesional y limpia -->
@@ -16,14 +16,16 @@
     <header class="app-header">
         <div class="header-container">
             <div class="brand-group">
-                <div class="brand-logo" aria-hidden="true">⚡</div>
-                <div>
-                    <h1 class="brand-title">QUICK ORDER</h1>
-                    <p class="brand-tagline">Sistema de Gestión de Comandas para Restaurantes de Comida Rápida</p>
-                </div>
+                <a href="{{ url_for('productos.catalogo') }}" class="brand-link" style="text-decoration:none; display:flex; align-items:center; gap:0.85rem; color:inherit;">
+                    <div class="brand-logo" aria-hidden="true">⚡</div>
+                    <div>
+                        <h1 class="brand-title">QUICK ORDER</h1>
+                        <p class="brand-tagline">Sistema de Gestión de Comandas para Restaurantes de Comida Rápida</p>
+                    </div>
+                </a>
             </div>
             <div class="header-status">
-                <span class="status-pill">Fase 1: Consulta de Productos</span>
+                <span class="status-pill">Fase 2: Gestión de Comandas</span>
             </div>
         </div>
     </header>
@@ -32,11 +34,17 @@
     <nav class="app-nav" aria-label="Navegación de módulos">
         <div class="nav-container">
             <ul class="nav-list">
-                <li class="nav-item active">
-                    <span class="nav-link active">📦 Productos (Activo)</span>
+                <li class="nav-item">
+                    <a href="{{ url_for('productos.catalogo') }}" 
+                       class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('productos.') else '' }}">
+                        📦 Productos (Catálogo)
+                    </a>
                 </li>
-                <li class="nav-item disabled">
-                    <span class="nav-link disabled" title="Próximos incrementos">📋 Comandas (Próximamente)</span>
+                <li class="nav-item">
+                    <a href="{{ url_for('comandas.listar_comandas') }}" 
+                       class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('comandas.') else '' }}">
+                        📋 Comandas (Activo)
+                    </a>
                 </li>
                 <li class="nav-item disabled">
                     <span class="nav-link disabled" title="Próximos incrementos">👨‍🍳 Cocina (Próximamente)</span>
@@ -51,6 +59,27 @@
     <!-- Contenido Principal -->
     <main class="main-content">
         <div class="content-container">
+            <!-- Mensajes Flash del Sistema -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages-group" role="region" aria-label="Notificaciones del sistema">
+                        {% for category, message in messages %}
+                            <div class="alert-box alert-{{ category if category != 'message' else 'info' }}" role="alert">
+                                <div class="alert-icon" aria-hidden="true">
+                                    {% if category == 'success' %}✅
+                                    {% elif category == 'error' %}⚠️
+                                    {% elif category == 'warning' %}⏳
+                                    {% else %}ℹ️{% endif %}
+                                </div>
+                                <div class="alert-content">
+                                    <p class="alert-text">{{ message }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
             {% block content %}{% endblock %}
         </div>
     </main>
@@ -58,8 +87,8 @@
     <!-- Pie de Página -->
     <footer class="app-footer">
         <div class="footer-container">
-            <p><strong>QUICK ORDER</strong> &copy; 2026 &bull; Módulo de Productos &bull; Conectado a SQLite local</p>
-            <p class="footer-note">Modo solo lectura: la administración y creación de pedidos se habilitará en los siguientes incrementos.</p>
+            <p><strong>QUICK ORDER</strong> &copy; 2026 &bull; Módulos: Productos y Comandas &bull; Conectado a SQLite local</p>
+            <p class="footer-note">Sistema de punto de venta rápido. Gestión de pedidos en mostrador y preparación.</p>
         </div>
     </footer>
 

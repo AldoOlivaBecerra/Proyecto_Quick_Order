@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}QUICK ORDER - Detalle de Comanda #{{ comanda.comanda_id }}{% endblock %}
+
+{% block content %}
+<section class="comanda-detail-section" aria-labelledby="detalle-heading">
+    <!-- Encabezado -->
+    <div class="catalog-header">
+        <div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <h2 id="detalle-heading" class="catalog-title">Comanda #{{ comanda.comanda_id }}</h2>
+                <span class="badge badge-estado badge-{{ comanda.estado|replace(' ', '-') }}" style="font-size:0.9rem; padding:0.35rem 0.85rem;">
+                    {{ comanda.estado|capitalize }}
+                </span>
+            </div>
+            <p class="catalog-subtitle">Información detallada del pedido y productos solicitados.</p>
+        </div>
+        <div class="catalog-actions">
+            <a href="{{ url_for('comandas.listar_comandas') }}" class="btn btn-outline">
+                ⬅️ Volver al listado
+            </a>
+        </div>
+    </div>
+
+    <!-- Metadatos de la Comanda -->
+    <div class="detail-cards-grid">
+        <div class="detail-meta-card">
+            <div class="meta-item">
+                <span class="meta-label">Fecha y Hora de Creación</span>
+                <span class="meta-value">{{ comanda.fecha_hora_creacion }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Última Actualización</span>
+                <span class="meta-value">{{ comanda.fecha_hora_actualizacion }}</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Total de Productos</span>
+                <span class="meta-value">{{ comanda.detalles|length }} {{ 'ítem' if comanda.detalles|length == 1 else 'ítems' }}</span>
+            </div>
+        </div>
+
+        <!-- Barra de Acciones Condicionales por Estado -->
+        <div class="detail-actions-card">
+            <h4 class="actions-card-title">Acciones del Cajero</h4>
+            {% if comanda.estado == 'pendiente' %}
+                <p class="text-small text-muted" style="margin-bottom:0.85rem;">
+                    Esta comanda se encuentra <strong>pendiente</strong>. Puede modificar sus productos o cancelarla.
+                </p>
+                <div class="detail-buttons-group">
+                    <a href="{{ url_for('comandas.editar_comanda', comanda_id=comanda.comanda_id) }}" class="btn btn-warning">
+                        ✏️ Modificar Comanda
+                    </a>
+                    <form method="POST" 
+                          action="{{ url_for('comandas.cancelar_comanda_accion', comanda_id=comanda.comanda_id) }}" 
+                          class="inline-form"
+                          onsubmit="return confirm('¿Está seguro de que desea cancelar la comanda #{{ comanda.comanda_id }}? Esta acción no se puede deshacer.');">
+                        <button type="submit" class="btn btn-danger">
+                            ❌ Cancelar Comanda
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <div class="status-notice-box">
+                    <span class="notice-icon">🔒</span>
+                    <div class="notice-text">
+                        <strong>Pedido en estado {{ comanda.estado }}:</strong>
+                        <p class="text-small" style="margin-top:0.25rem;">
+                            No es posible modificar ni cancelar este pedido porque ya no se encuentra en estado pendiente.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Tabla de Productos del Detalle -->
+    <div class="form-card" style="margin-top: 1.5rem;">
+        <div class="form-card-header">
+            <h3 class="form-section-title">Productos Incluidos</h3>
+        </div>
+
+        <div class="items-table-wrapper">
+            <table class="comanda-items-table" role="table" aria-label="Detalles de la comanda">
+                <thead>
+                    <tr>
+                        <th scope="col" style="width: 10%;">#</th>
+                        <th scope="col" style="width: 40%;">Producto</th>
+                        <th scope="col" style="width: 15%;" class="text-center">Cantidad</th>
+                        <th scope="col" style="width: 35%;">Especificaciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in comanda.detalles %}
+                        <tr>
+                            <td>
+                                <span class="product-id-tag">#{{ item.producto_id }}</span>
+                            </td>
+                            <td>
+                                <strong>{{ item.producto_nombre }}</strong>
+                                {% if item.producto_descripcion %}
+                                    <p class="text-small text-muted" style="margin-top:0.15rem;">{{ item.producto_descripcion }}</p>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge-qty">{{ item.cantidad }}</span>
+                            </td>
+                            <td>
+                                {% if item.especificaciones and item.especificaciones.strip() %}
+                                    <span class="spec-text">📝 {{ item.especificaciones }}</span>
+                                {% else %}
+                                    <span class="text-muted text-small"><em>Sin especificaciones especiales</em></span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}

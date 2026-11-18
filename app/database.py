@@ -25,7 +25,6 @@ def get_db():
         is_uri = db_path.startswith('file:')
         g.db = sqlite3.connect(
             db_path,
-            detect_types=sqlite3.PARSE_DECLTYPES,
             uri=is_uri
         )
         # Permite acceder a las columnas por nombre (ej. fila['nombre'])
@@ -77,6 +76,7 @@ def init_app(app):
     app.teardown_appcontext(close_db)
     app.cli.add_command(init_db_command)
     
-    # Inicialización automática de la base de datos al arrancar
-    with app.app_context():
-        _execute_schema()
+    # Inicialización automática de la base de datos al arrancar (solo fuera de pruebas)
+    if not app.config.get('TESTING'):
+        with app.app_context():
+            _execute_schema()
