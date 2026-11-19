@@ -30,7 +30,22 @@ Sistema para restaurantes de comida rápida desarrollado de forma modular e incr
 - **Cancelación de comandas**:
   - Exclusivamente permitido en estado `pendiente`.
   - Cancelación lógica (cambio de estado a `cancelada`), conservando los registros e historial en SQLite.
-  - Confirmación requerida en la interfaz.
+
+### 🟢 Incremento 3: Módulo de Cocina (Kitchen Display System — KDS)
+- **Monitor de Cocina KDS**:
+  - Pantalla visual tipo tablero Kanban en `/cocina` para el personal de cocina.
+  - Muestra únicamente comandas activas (`pendiente` y `en preparación`).
+  - Exclusión automática de comandas canceladas y finalizadas.
+  - Orden cronológico estricto de llegada (FIFO: First-In, First-Out).
+  - Desglose visible de identificador `#ID`, productos, cantidades destacadas y especificaciones.
+- **Transiciones de Estado Controladas**:
+  - Iniciar preparación: `pendiente` &rarr; `en preparación`.
+  - Finalizar preparación: `en preparación` &rarr; `finalizada` (retirándola del monitor activo).
+  - Bloqueo estricto de saltos de estado directos o acciones sobre pedidos cancelados/finalizados.
+- **Actualización Automática**:
+  - Short Polling asíncrono cada 1.5 segundos mediante `GET /cocina/api/activas`.
+  - Reflejo automático de pedidos creados en caja en menos de 3 segundos sin recargar la página.
+  - Actualización reactiva del DOM sin parpadeos ni duplicidad de tarjetas.
 
 ---
 
@@ -58,27 +73,36 @@ Proyecto_Quick_Order/
 │   │   │   ├── service.py         # Lógica de negocio del catálogo
 │   │   │   └── repository.py      # Consultas SQL para productos
 │   │   │
-│   │   └── comandas/
+│   │   ├── comandas/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py          # Controlador de comandas (caja)
+│   │   │   ├── service.py         # Lógica de negocio (estados, validaciones, transacciones)
+│   │   │   └── repository.py      # Consultas SQL sobre comanda y detalle_comanda
+│   │   │
+│   │   └── cocina/
 │   │       ├── __init__.py
-│   │       ├── routes.py          # Controlador de comandas (rutas web y formularios)
-│   │       ├── service.py         # Lógica de negocio (estados, validaciones, transacciones)
-│   │       └── repository.py      # Consultas SQL sobre comanda y detalle_comanda
+│   │       ├── routes.py          # Controlador de cocina (vistas KDS y API polling)
+│   │       ├── service.py         # Lógica de cocina (transiciones válidas, FIFO, validaciones)
+│   │       └── repository.py      # Consultas SQL de órdenes activas y actualización de estados
 │   │
 │   ├── static/
 │   │   ├── css/
-│   │   │   └── styles.css         # Hoja de estilos fast-food POS responsiva
+│   │   │   └── styles.css         # Hoja de estilos global, fast-food POS y tablero KDS
 │   │   └── js/
-│   │       └── main.js            # Comportamiento dinámico de filas y validaciones
+│   │       ├── main.js            # Comportamiento interactivo de formularios
+│   │       └── cocina.js          # Polling cada 1.5s y actualización reactiva de cocina
 │   │
 │   └── templates/
 │       ├── base.html              # Plantilla base con navegación y notificaciones flash
 │       ├── productos/
 │       │   └── catalogo.html      # Catálogo de productos
-│       └── comandas/
-│           ├── lista.html         # Listado general de comandas y estados
-│           ├── crear.html         # Formulario interactivo de nueva comanda
-│           ├── detalle.html       # Vista de detalle completo de la comanda
-│           └── editar.html        # Formulario de modificación de comanda pendiente
+│       ├── comandas/
+│       │   ├── lista.html         # Listado general de comandas en caja
+│       │   ├── crear.html         # Formulario interactivo de nueva comanda
+│       │   ├── detalle.html       # Vista de detalle completo de la comanda
+│       │   └── editar.html        # Formulario de modificación de comanda pendiente
+│       └── cocina/
+│           └── pantalla.html      # Tablero Kanban del monitor de cocina (KDS)
 │
 ├── data/                          # Almacén de base de datos SQLite
 │   ├── .gitkeep
@@ -88,7 +112,8 @@ Proyecto_Quick_Order/
 ├── tests/
 │   ├── __init__.py
 │   ├── test_productos.py          # 7 pruebas automatizadas de productos
-│   └── test_comandas.py           # 11 pruebas automatizadas de comandas (10 obligatorias + 1 extra)
+│   ├── test_comandas.py           # 14 pruebas automatizadas de comandas
+│   └── test_cocina.py             # 11 pruebas automatizadas de cocina
 │
 ├── requirements.txt               # Dependencias del proyecto (Flask)
 ├── run.py                         # Punto de entrada para ejecutar el servidor local
@@ -155,13 +180,14 @@ python run.py
 ### 4. Abrir en el navegador
 
 * Catálogo de productos: [http://127.0.0.1:5000/productos](http://127.0.0.1:5000/productos)
-* Gestión de comandas: [http://127.0.0.1:5000/comandas](http://127.0.0.1:5000/comandas)
+* Gestión de comandas (Caja): [http://127.0.0.1:5000/comandas](http://127.0.0.1:5000/comandas)
+* Monitor de Cocina (KDS): [http://127.0.0.1:5000/cocina](http://127.0.0.1:5000/cocina)
 
 ---
 
 ## 🧪 Ejecución de Pruebas Automatizadas
 
-Para ejecutar la suite completa de 18 pruebas (7 de Productos + 11 de Comandas):
+Para ejecutar la suite completa de 32 pruebas automatizadas (7 de Productos + 14 de Comandas + 11 de Cocina):
 
 ```powershell
 .\venv\Scripts\python -m unittest discover -s tests -v

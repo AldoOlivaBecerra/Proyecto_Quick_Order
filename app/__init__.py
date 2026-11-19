@@ -8,6 +8,7 @@ from app.database import init_app, get_db
 from app.seed import init_seed_app, seed_test_data
 from app.modules.productos import productos_bp
 from app.modules.comandas import comandas_bp
+from app.modules.cocina import cocina_bp
 
 def create_app(config_name='default'):
     """
@@ -41,5 +42,6 @@ def create_app(config_name='default'):
     # Registro de módulos (Blueprints)
     app.register_blueprint(productos_bp)
     app.register_blueprint(comandas_bp)
+    app.register_blueprint(cocina_bp)
     
     return app

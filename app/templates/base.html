@@ -25,7 +25,7 @@
                 </a>
             </div>
             <div class="header-status">
-                <span class="status-pill">Fase 2: Gestión de Comandas</span>
+                <span class="status-pill">Fase 3: Módulo de Cocina</span>
             </div>
         </div>
     </header>
@@ -46,8 +46,11 @@
                         📋 Comandas (Activo)
                     </a>
                 </li>
-                <li class="nav-item disabled">
-                    <span class="nav-link disabled" title="Próximos incrementos">👨‍🍳 Cocina (Próximamente)</span>
+                <li class="nav-item">
+                    <a href="{{ url_for('cocina.pantalla_cocina') }}" 
+                       class="nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('cocina.') else '' }}">
+                        👨‍🍳 Cocina (KDS)
+                    </a>
                 </li>
                 <li class="nav-item disabled">
                     <span class="nav-link disabled" title="Próximos incrementos">📊 Reportes (Próximamente)</span>

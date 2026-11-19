@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}QUICK ORDER - Monitor de Cocina (KDS){% endblock %}
+
+{% block content %}
+<section class="kds-section" aria-labelledby="kds-heading">
+    <!-- Encabezado del KDS -->
+    <div class="kds-header">
+        <div>
+            <div style="display:flex; align-items:center; gap:0.75rem;">
+                <h2 id="kds-heading" class="catalog-title">Monitor de Cocina (KDS)</h2>
+                <span class="sync-badge" id="sync-status" title="Actualización en tiempo real cada 1.5 segundos">
+                    <span class="sync-dot live"></span> En vivo (1.5s)
+                </span>
+            </div>
+            <p class="catalog-subtitle">Órdenes activas en espera y en preparación ordenadas por orden de llegada (FIFO).</p>
+        </div>
+        <div class="kds-metrics">
+            <div class="kds-metric-pill">
+                <span class="kds-metric-label">Pendientes:</span>
+                <span class="kds-metric-val val-pendiente" id="metric-pendientes">{{ pendientes|length }}</span>
+            </div>
+            <div class="kds-metric-pill">
+                <span class="kds-metric-label">En Preparación:</span>
+                <span class="kds-metric-val val-preparacion" id="metric-preparacion">{{ en_preparacion|length }}</span>
+            </div>
+            <div class="kds-metric-pill">
+                <span class="kds-metric-label">Total Activas:</span>
+                <span class="kds-metric-val" id="metric-total">{{ total }}</span>
+            </div>
+        </div>
+    </div>
+
+    {% if error_mensaje %}
+        <div class="alert-box alert-error" role="alert">
+            <div class="alert-icon" aria-hidden="true">⚠️</div>
+            <div class="alert-content">
+                <h3 class="alert-title">Error en Monitor de Cocina</h3>
+                <p class="alert-text">{{ error_mensaje }}</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Tablero KDS (2 Columnas) -->
+    <div class="kds-board" id="kds-board">
+        <!-- COLUMNA 1: PENDIENTES -->
+        <div class="kds-column column-pendientes">
+            <div class="kds-column-header">
+                <div class="kds-col-title-group">
+                    <span class="kds-col-icon">📋</span>
+                    <h3 class="kds-col-title">Por Preparar (Pendientes)</h3>
+                </div>
+                <span class="kds-col-badge badge-pendiente" id="badge-count-pendientes">{{ pendientes|length }}</span>
+            </div>
+            <div class="kds-cards-container" id="container-pendientes">
+                {% if pendientes and pendientes|length > 0 %}
+                    {% for comanda in pendientes %}
+                        <article class="kds-card card-pendiente" id="card-comanda-{{ comanda.comanda_id }}" data-id="{{ comanda.comanda_id }}" data-estado="pendiente">
+                            <div class="kds-card-header">
+                                <span class="kds-card-id">#{{ comanda.comanda_id }}</span>
+                                <span class="kds-card-time" title="Hora de registro">⏰ {{ comanda.fecha_hora_creacion }}</span>
+                            </div>
+                            <div class="kds-card-items">
+                                <ul class="kds-items-list">
+                                    {% for item in comanda['items'] %}
+                                        <li class="kds-item-row">
+                                            <span class="kds-item-qty">{{ item.cantidad }}x</span>
+                                            <div class="kds-item-info">
+                                                <span class="kds-item-name">{{ item.producto_nombre }}</span>
+                                                {% if item.especificaciones and item.especificaciones.strip() %}
+                                                    <span class="kds-item-spec">📝 {{ item.especificaciones }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="kds-card-footer">
+                                <button type="button" 
+                                        class="btn btn-kds-start btn-action-iniciar" 
+                                        data-id="{{ comanda.comanda_id }}"
+                                        title="Iniciar la preparación de este pedido">
+                                    ▶️ Empezar Preparación
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="kds-empty-column" id="empty-pendientes">
+                        <span class="empty-icon">☕</span>
+                        <p class="empty-title">Sin órdenes pendientes</p>
+                        <p class="empty-sub">Las nuevas comandas registradas en caja aparecerán aquí automáticamente.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- COLUMNA 2: EN PREPARACIÓN -->
+        <div class="kds-column column-preparacion">
+            <div class="kds-column-header">
+                <div class="kds-col-title-group">
+                    <span class="kds-col-icon">🍳</span>
+                    <h3 class="kds-col-title">En Preparación (En Curso)</h3>
+                </div>
+                <span class="kds-col-badge badge-en-preparacion" id="badge-count-preparacion">{{ en_preparacion|length }}</span>
+            </div>
+            <div class="kds-cards-container" id="container-preparacion">
+                {% if en_preparacion and en_preparacion|length > 0 %}
+                    {% for comanda in en_preparacion %}
+                        <article class="kds-card card-preparacion" id="card-comanda-{{ comanda.comanda_id }}" data-id="{{ comanda.comanda_id }}" data-estado="en preparación">
+                            <div class="kds-card-header">
+                                <span class="kds-card-id">#{{ comanda.comanda_id }}</span>
+                                <span class="kds-card-time" title="Hora de inicio">🔥 En cocina</span>
+                            </div>
+                            <div class="kds-card-items">
+                                <ul class="kds-items-list">
+                                    {% for item in comanda['items'] %}
+                                        <li class="kds-item-row">
+                                            <span class="kds-item-qty">{{ item.cantidad }}x</span>
+                                            <div class="kds-item-info">
+                                                <span class="kds-item-name">{{ item.producto_nombre }}</span>
+                                                {% if item.especificaciones and item.especificaciones.strip() %}
+                                                    <span class="kds-item-spec">📝 {{ item.especificaciones }}</span>
+                                                {% endif %}
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                            <div class="kds-card-footer">
+                                <button type="button" 
+                                        class="btn btn-kds-finish btn-action-finalizar" 
+                                        data-id="{{ comanda.comanda_id }}"
+                                        title="Marcar la comanda como lista y completada">
+                                    ✅ Marcar como Lista
+                                </button>
+                            </div>
+                        </article>
+                    {% endfor %}
+                {% else %}
+                    <div class="kds-empty-column" id="empty-preparacion">
+                        <span class="empty-icon">🧑‍🍳</span>
+                        <p class="empty-title">Sin órdenes en curso</p>
+                        <p class="empty-sub">Inicie una orden pendiente para comenzar su preparación.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Script de Polling y Actualización Asíncrona KDS -->
+<script src="{{ url_for('static', filename='js/cocina.js') }}"></script>
+{% endblock %}

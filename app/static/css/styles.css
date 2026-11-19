@@ -851,3 +851,338 @@ body {
 .text-small {
     font-size: 0.82rem;
 }
+
+
+/* ===================================================================
+   INCREMENTO 3: MÓDULO DE COCINA (KDS) - ESTILOS
+   =================================================================== */
+
+.kds-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 1.5rem;
+}
+
+.sync-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.25rem 0.65rem;
+    border-radius: 9999px;
+    background-color: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+}
+
+.sync-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.sync-dot.live {
+    background-color: #10B981;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+    animation: pulseSync 1.5s infinite;
+}
+
+.sync-dot.reconectando {
+    background-color: #F59E0B;
+}
+
+@keyframes pulseSync {
+    0% { transform: scale(0.95); opacity: 0.8; }
+    50% { transform: scale(1.15); opacity: 1; }
+    100% { transform: scale(0.95); opacity: 0.8; }
+}
+
+.kds-metrics {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.kds-metric-pill {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.kds-metric-label {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-weight: 600;
+}
+
+.kds-metric-val {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+}
+
+.val-pendiente {
+    color: #D97706;
+}
+
+.val-preparacion {
+    color: #2563EB;
+}
+
+/* Tablero KDS (2 Columnas) */
+.kds-board {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+
+@media (max-width: 850px) {
+    .kds-board {
+        grid-template-columns: 1fr;
+    }
+}
+
+.kds-column {
+    background-color: #F1F5F9;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 480px;
+}
+
+.column-pendientes {
+    border-top: 4px solid #F59E0B;
+}
+
+.column-preparacion {
+    border-top: 4px solid #3B82F6;
+}
+
+.kds-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #CBD5E1;
+}
+
+.kds-col-title-group {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.kds-col-icon {
+    font-size: 1.35rem;
+}
+
+.kds-col-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+    letter-spacing: -0.3px;
+}
+
+.kds-col-badge {
+    font-size: 0.85rem;
+    font-weight: 800;
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+}
+
+.kds-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+/* Tarjetas individuales de pedido KDS */
+.kds-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 1.15rem;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kds-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.card-pendiente {
+    border-left: 5px solid #F59E0B;
+}
+
+.card-preparacion {
+    border-left: 5px solid #3B82F6;
+    background-color: #FAF5FF;
+}
+
+.kds-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.kds-card-id {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+}
+
+.kds-card-time {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.kds-card-items {
+    flex: 1;
+    margin-bottom: 1rem;
+}
+
+.kds-items-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.kds-item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px dashed #F1F5F9;
+}
+
+.kds-item-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.kds-item-qty {
+    background-color: var(--color-secondary);
+    color: #FFFFFF;
+    font-weight: 800;
+    font-size: 0.85rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-sm);
+    min-width: 32px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.kds-item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.kds-item-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+}
+
+.kds-item-spec {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #B45309;
+    background-color: #FEF3C7;
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-sm);
+    display: inline-block;
+    align-self: flex-start;
+}
+
+.kds-card-footer {
+    display: flex;
+    justify-content: stretch;
+}
+
+.btn-kds-start {
+    width: 100%;
+    background-color: #D97706;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 0.65rem;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-kds-start:hover {
+    background-color: #B45309;
+}
+
+.btn-kds-finish {
+    width: 100%;
+    background-color: #15803D;
+    color: #FFFFFF;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 0.65rem;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn-kds-finish:hover {
+    background-color: #166534;
+}
+
+/* Estado vacío en columnas KDS */
+.kds-empty-column {
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 2px dashed #CBD5E1;
+    border-radius: var(--radius-md);
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+    margin: 1rem 0;
+}
+
+.kds-empty-column .empty-icon {
+    font-size: 2.2rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.kds-empty-column .empty-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.kds-empty-column .empty-sub {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+}
