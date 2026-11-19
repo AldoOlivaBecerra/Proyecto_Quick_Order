@@ -47,6 +47,18 @@ Sistema para restaurantes de comida rápida desarrollado de forma modular e incr
   - Reflejo automático de pedidos creados en caja en menos de 3 segundos sin recargar la página.
   - Actualización reactiva del DOM sin parpadeos ni duplicidad de tarjetas.
 
+### 🟢 Incremento 4: Módulo de Reportes (Productos Más Vendidos)
+- **Reporte Analítico de Ventas**:
+  - Pantalla visual e interactiva en `/reportes` y `/reportes/mas-vendidos`.
+  - Cálculo acumulado de unidades vendidas por producto obtenido directamente de SQLite.
+  - Filtrado estricto: contabiliza **exclusivamente comandas finalizadas**.
+  - Exclusión absoluta de comandas `pendiente`, `en preparación` y `cancelada`.
+  - Ordenamiento descendente de mayor a menor demanda (`total_vendido DESC`).
+  - Desempate alfabético determinista por nombre de producto (`p.nombre ASC`).
+  - Métricas clave (KPIs): Total de unidades despachadas, Producto estrella / más vendido y Variedad de productos con demanda.
+  - Cálculo de porcentaje de participación de cada producto sobre el total general.
+  - Manejo seguro de casos límite (cero ventas, estado vacío, historial de productos descontinuados).
+
 ---
 
 ## 🏗️ Arquitectura del Proyecto
@@ -79,15 +91,21 @@ Proyecto_Quick_Order/
 │   │   │   ├── service.py         # Lógica de negocio (estados, validaciones, transacciones)
 │   │   │   └── repository.py      # Consultas SQL sobre comanda y detalle_comanda
 │   │   │
-│   │   └── cocina/
+│   │   ├── cocina/
+│   │   │   ├── __init__.py
+│   │   │   ├── routes.py          # Controlador de cocina (vistas KDS y API polling)
+│   │   │   ├── service.py         # Lógica de cocina (transiciones válidas, FIFO, validaciones)
+│   │   │   └── repository.py      # Consultas SQL de órdenes activas y actualización de estados
+│   │   │
+│   │   └── reportes/
 │   │       ├── __init__.py
-│   │       ├── routes.py          # Controlador de cocina (vistas KDS y API polling)
-│   │       ├── service.py         # Lógica de cocina (transiciones válidas, FIFO, validaciones)
-│   │       └── repository.py      # Consultas SQL de órdenes activas y actualización de estados
+│   │       ├── routes.py          # Controlador de reportes (vistas analíticas)
+│   │       ├── service.py         # Lógica de cálculo, porcentajes y KPIs
+│   │       └── repository.py      # Consultas analíticas SQL con agregación
 │   │
 │   ├── static/
 │   │   ├── css/
-│   │   │   └── styles.css         # Hoja de estilos global, fast-food POS y tablero KDS
+│   │   │   └── styles.css         # Hoja de estilos global, fast-food POS, KDS y KPIs
 │   │   └── js/
 │   │       ├── main.js            # Comportamiento interactivo de formularios
 │   │       └── cocina.js          # Polling cada 1.5s y actualización reactiva de cocina
@@ -101,8 +119,10 @@ Proyecto_Quick_Order/
 │       │   ├── crear.html         # Formulario interactivo de nueva comanda
 │       │   ├── detalle.html       # Vista de detalle completo de la comanda
 │       │   └── editar.html        # Formulario de modificación de comanda pendiente
-│       └── cocina/
-│           └── pantalla.html      # Tablero Kanban del monitor de cocina (KDS)
+│       ├── cocina/
+│       │   └── pantalla.html      # Tablero Kanban del monitor de cocina (KDS)
+│       └── reportes/
+│           └── mas_vendidos.html  # Pantalla de productos más vendidos y KPIs
 │
 ├── data/                          # Almacén de base de datos SQLite
 │   ├── .gitkeep
@@ -113,7 +133,8 @@ Proyecto_Quick_Order/
 │   ├── __init__.py
 │   ├── test_productos.py          # 7 pruebas automatizadas de productos
 │   ├── test_comandas.py           # 14 pruebas automatizadas de comandas
-│   └── test_cocina.py             # 11 pruebas automatizadas de cocina
+│   ├── test_cocina.py             # 12 pruebas automatizadas de cocina
+│   └── test_reportes.py           # 11 pruebas automatizadas de reportes
 │
 ├── requirements.txt               # Dependencias del proyecto (Flask)
 ├── run.py                         # Punto de entrada para ejecutar el servidor local

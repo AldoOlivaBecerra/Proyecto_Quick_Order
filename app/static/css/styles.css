@@ -1186,3 +1186,238 @@ body {
     font-size: 0.82rem;
     color: var(--color-text-muted);
 }
+
+/* ===================================================================
+   INCREMENTO 4: MÓDULO DE REPORTES (PRODUCTOS MÁS VENDIDOS)
+   =================================================================== */
+.reportes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Rejilla de Métricas KPIs */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.25rem;
+}
+
+.kpi-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1.15rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.kpi-icon {
+    font-size: 2.2rem;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icon-primary {
+    background-color: #EFF6FF;
+    color: #2563EB;
+}
+
+.icon-warning {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.icon-success {
+    background-color: #DCFCE7;
+    color: #16A34A;
+}
+
+.kpi-body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.kpi-label {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--color-text-muted);
+    margin-bottom: 0.2rem;
+}
+
+.kpi-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--color-secondary);
+    line-height: 1.15;
+}
+
+.kpi-highlight {
+    font-size: 1.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kpi-hint {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Tarjeta y Tabla de Ranking */
+.ranking-card {
+    overflow: hidden;
+}
+
+.ranking-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ranking-table th {
+    background-color: #F8FAFC;
+    color: var(--color-secondary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid var(--color-border);
+}
+
+.ranking-table td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.ranking-row:hover {
+    background-color: #F8FAFC;
+}
+
+.ranking-top-1 {
+    background-color: #FFFBEB;
+}
+
+.ranking-top-1:hover {
+    background-color: #FEF3C7;
+}
+
+.ranking-top-2 {
+    background-color: #F8FAFC;
+}
+
+.ranking-top-3 {
+    background-color: #FFF7ED;
+}
+
+/* Badges de Posición */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 9999px;
+    min-width: 44px;
+}
+
+.rank-gold {
+    background-color: #FEF3C7;
+    color: #B45309;
+    border: 1px solid #F59E0B;
+}
+
+.rank-silver {
+    background-color: #F1F5F9;
+    color: #475569;
+    border: 1px solid #94A3B8;
+}
+
+.rank-bronze {
+    background-color: #FFEDD5;
+    color: #9A3412;
+    border: 1px solid #F97316;
+}
+
+.rank-default {
+    background-color: #F8FAFC;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+}
+
+/* Celdas de Producto */
+.product-cell-name {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--color-secondary);
+}
+
+.product-cell-desc {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    margin: 0.2rem 0 0 0;
+    max-width: 480px;
+}
+
+/* Píldora de Cantidad */
+.qty-pill {
+    display: inline-block;
+    background-color: var(--color-secondary);
+    color: #FFFFFF;
+    font-size: 1.1rem;
+    font-weight: 800;
+    padding: 0.25rem 0.85rem;
+    border-radius: var(--radius-sm);
+    min-width: 48px;
+}
+
+/* Barra de Participación */
+.participation-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.progress-bar-bg {
+    flex: 1;
+    height: 10px;
+    background-color: #E2E8F0;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F59E0B 0%, #D97706 100%);
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+}
+
+.participation-text {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-secondary);
+    min-width: 45px;
+    text-align: right;
+}

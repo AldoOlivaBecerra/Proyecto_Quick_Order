@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+
+{% block title %}Productos Más Vendidos - Quick Order{% endblock %}
+
+{% block content %}
+<div class="reportes-container">
+    <!-- Encabezado del Reporte -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-title">📊 Reporte de Ventas: Productos Más Vendidos</h1>
+            <p class="page-subtitle">
+                Acumulado histórico basado exclusivamente en <strong>comandas finalizadas</strong>. Excluye órdenes pendientes, en preparación y canceladas.
+            </p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('comandas.nueva_comanda') }}" class="btn btn-primary">
+                ➕ Nueva Comanda
+            </a>
+            <a href="{{ url_for('cocina.pantalla_cocina') }}" class="btn btn-secondary">
+                👨‍🍳 Ver Cocina
+            </a>
+        </div>
+    </div>
+
+    {% if error_mensaje %}
+        <div class="alert alert-danger" role="alert">
+            <strong>⚠️ Error del sistema:</strong> {{ error_mensaje }}
+        </div>
+    {% endif %}
+
+    <!-- Tarjetas de Resumen (KPIs) -->
+    <div class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-icon icon-primary">📦</div>
+            <div class="kpi-body">
+                <span class="kpi-label">Total Unidades Vendidas</span>
+                <span class="kpi-value" id="kpi-total-unidades">{{ reporte.total_unidades_vendidas }}</span>
+                <span class="kpi-hint">Despachadas en órdenes finalizadas</span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon icon-warning">⭐</div>
+            <div class="kpi-body">
+                <span class="kpi-label">Producto Más Vendido</span>
+                <span class="kpi-value kpi-highlight" id="kpi-producto-estrella">
+                    {% if reporte.producto_estrella %}
+                        {{ reporte.producto_estrella.nombre }}
+                    {% else %}
+                        Ninguno
+                    {% endif %}
+                </span>
+                <span class="kpi-hint">
+                    {% if reporte.producto_estrella %}
+                        {{ reporte.producto_estrella.total_vendido }} unidades vendidas ({{ reporte.producto_estrella.porcentaje }}%)
+                    {% else %}
+                        Sin ventas registradas
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-icon icon-success">🍔</div>
+            <div class="kpi-body">
+                <span class="kpi-label">Productos con Ventas</span>
+                <span class="kpi-value" id="kpi-total-productos">{{ reporte.total_productos_distintos }}</span>
+                <span class="kpi-hint">Variedad con al menos 1 unidad finalizada</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Ranking de Productos -->
+    <div class="card ranking-card">
+        <div class="card-header ranking-card-header">
+            <h2 class="card-title">🏆 Ranking de Demanda y Ventas</h2>
+            <span class="badge badge-info">Cálculo en tiempo real</span>
+        </div>
+
+        {% if reporte.productos and reporte.productos|length > 0 %}
+            <div class="table-responsive">
+                <table class="table ranking-table">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width: 80px;">Posición</th>
+                            <th>Producto</th>
+                            <th class="text-center" style="width: 150px;">Unidades Vendidas</th>
+                            <th class="text-center" style="width: 140px;">En Comandas</th>
+                            <th style="width: 220px;">Participación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for prod in reporte.productos %}
+                            <tr class="ranking-row {% if prod.ranking <= 3 %}ranking-top-{{ prod.ranking }}{% endif %}">
+                                <td class="text-center">
+                                    {% if prod.ranking == 1 %}
+                                        <span class="rank-badge rank-gold" title="Primer lugar">🥇 #1</span>
+                                    {% elif prod.ranking == 2 %}
+                                        <span class="rank-badge rank-silver" title="Segundo lugar">🥈 #2</span>
+                                    {% elif prod.ranking == 3 %}
+                                        <span class="rank-badge rank-bronze" title="Tercer lugar">🥉 #3</span>
+                                    {% else %}
+                                        <span class="rank-badge rank-default">#{{ prod.ranking }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="product-cell-name">
+                                        <strong>{{ prod.nombre }}</strong>
+                                        {% if prod.activo == 0 %}
+                                            <span class="badge badge-secondary" title="Este producto ya no está activo para nuevas comandas">Inactivo</span>
+                                        {% endif %}
+                                    </div>
+                                    {% if prod.descripcion %}
+                                        <p class="product-cell-desc">{{ prod.descripcion }}</p>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <span class="qty-pill">{{ prod.total_vendido }}</span>
+                                </td>
+                                <td class="text-center text-muted">
+                                    {{ prod.total_comandas }} {{ 'orden' if prod.total_comandas == 1 else 'órdenes' }}
+                                </td>
+                                <td>
+                                    <div class="participation-wrapper">
+                                        <div class="progress-bar-bg">
+                                            <div class="progress-bar-fill" style="width: {{ prod.porcentaje }}%;"></div>
+                                        </div>
+                                        <span class="participation-text">{{ prod.porcentaje }}%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <!-- Estado Vacío -->
+            <div class="empty-state">
+                <div class="empty-state-icon">📊</div>
+                <h3 class="empty-state-title">Aún no hay ventas registradas</h3>
+                <p class="empty-state-text">
+                    El reporte se genera exclusivamente a partir de comandas con estado <strong>finalizada</strong>.
+                    Las comandas pendientes o en preparación deben completarse en la pantalla de cocina para ser contabilizadas aquí.
+                </p>
+                <div class="empty-state-actions">
+                    <a href="{{ url_for('cocina.pantalla_cocina') }}" class="btn btn-primary">
+                        👨‍🍳 Ir a Cocina a Finalizar Órdenes
+                    </a>
+                    <a href="{{ url_for('comandas.nueva_comanda') }}" class="btn btn-secondary">
+                        ➕ Registrar Comanda en Caja
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
